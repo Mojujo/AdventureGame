@@ -20,7 +20,7 @@ public class Game {
         }
     }
 
-    public void stop() {
+    public void stop(){ //Force Quit
         run = false;
     }
 
@@ -32,6 +32,8 @@ public class Game {
                       *****************************
                     """);
             Thread.sleep(1000);
+            //Implement instructions
+            //Implement switch case start game
             System.out.println("Starting Game. . .");
         } catch (Exception _) {
         }
