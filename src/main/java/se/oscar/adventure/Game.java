@@ -1,5 +1,9 @@
 package se.oscar.adventure;
 
+import se.oscar.adventure.model.Creature;
+import se.oscar.adventure.model.Monster;
+import se.oscar.adventure.model.Player;
+
 import java.util.Scanner;
 
 public class Game {
@@ -10,17 +14,19 @@ public class Game {
     private final String TOWN_CENTER = "town_center";
     private final String START = "start";
     private String currentLocation = START;
+    private Creature player;
+    private Creature monster;
     private boolean run = true;
     private final Scanner scanner = new Scanner(System.in);
 
     public void start() {
         townCentre();
-        while (run) {
+        while (run && player.isAlive()) {
             run = processInput();
         }
     }
 
-    public void stop(){ //Force Quit
+    public void stop() { //Force Quit
         run = false;
     }
 
@@ -30,14 +36,28 @@ public class Game {
                       *****************************
                       Welcome to the Adventure Game
                       *****************************
+                    
+                    Instructions:
+                    Control the player by typing the action you would like to take
+                    Commands include: 'go north' 'go south' 'go east' 'go west' 'go to town' or 'quit'
+                    You can only walk to adjacent locations
+                    If your health reaches 0 you lose
                     """);
             Thread.sleep(1000);
-            //Implement instructions
-            //Implement switch case start game
-            System.out.println("Starting Game. . .");
+            System.out.println("Do you want to start the game? (y/n)");
+            switch (getUserInput()) {
+                case "y" -> {
+                    System.out.println("Enter Player Name: ");
+                    player = new Player(100, 35, getUserInput());
+                    monster = new Monster(60, 15, "Goblin");
+                    System.out.println("Starting the game. . .");
+                    start();
+                }
+                case "n" -> System.out.println("Perhaps another time.");
+                default -> System.out.println("Invalid input.");
+            }
         } catch (Exception _) {
         }
-        start();
     }
 
     private String getUserInput() {
@@ -60,6 +80,23 @@ public class Game {
         return true;
     }
 
+    void executeAttack(Creature attacker, Creature defender) {
+        attacker.attack(defender);
+        System.out.println(attacker.getName() + " attacks " + defender.getName() + " for " + attacker.getDamage());
+        if (defender.isAlive()) {
+            System.out.println(defender.getName() + " has " + defender.getHealth() + " health left");
+        } else {
+            System.out.println(defender.getName() + " has died!");
+        }
+    }
+
+    private void fightOneRound() {
+        executeAttack(player, monster);
+        if (monster.isAlive()) {
+            executeAttack(monster, player);
+        }
+    }
+
     private void townCentre() {
         if (!currentLocation.equals(TOWN_CENTER)) {
             System.out.println("You enter a bustling town crowded with merchants and adventurers alike.");
@@ -76,6 +113,9 @@ public class Game {
             System.out.println("Going north");
             // Encounter implement
             currentLocation = NORTH;
+
+            fightOneRound();
+
         } else {
             System.out.println("You cant go there");
         }
