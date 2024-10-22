@@ -3,7 +3,7 @@ package se.oscar.adventure.model;
 public class Creature {
     private int health;
     private int damage;
-    private String name;
+    private final String name;
 
     public Creature(int health, int damage, String name) {
         this.health = health;
